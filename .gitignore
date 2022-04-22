@@ -1,6 +1,6 @@
 .super
 .pytest_cache
 supercharged_cli.egg-info
-src/lib/tests/__pycache__/
-src/__pycache__/
-src/lib/__pycache__/
+supercharged/lib/tests/__pycache__/
+supercharged/__pycache__/
+supercharged/lib/__pycache__/
