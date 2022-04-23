@@ -13,24 +13,22 @@ def create_app_db():
 
 def create_default_setup(path, domain, installed_apps=[], ports=None):
     env = Environment(
-        loader=PackageLoader("src.lib"),
+        loader=PackageLoader("supercharged.lib"),
         autoescape=select_autoescape()
     )
 
     template = env.get_template("TRAFIK_TEMPLATE.yml")
-    print(installed_apps)
     formatted_string = template.render({
         'frontend_app_path': path,
         'domain': domain,
         'ports': ports,
         'installed_apps': installed_apps
     })
-    print(formatted_string)
     return formatted_string
 
 def create_frontpage():
     env = Environment(
-        loader=PackageLoader("src.lib"),
+        loader=PackageLoader("supercharged.lib"),
         autoescape=select_autoescape()
     )
 

@@ -51,24 +51,27 @@ def init(site_path, domain):
         installed_app_drive = os.getcwd()
     else:
         installed_app_drive = site_path
-    try:
-        os.makedirs(os.path.join(installed_app_drive, 'installed_apps'))
-    except Exception as e:
-        click.echo("Hey, I couldn't create the installed_apps folder. Do you have permission to make folders here: " + installed_app_drive)
+    
+    if os.path.isdir(os.path.join(installed_app_drive, 'installed_apps')) == False:
+        try:
+            os.makedirs(os.path.join(installed_app_drive, 'installed_apps'))
+        except Exception as e:
+            click.echo("Hey, I couldn't create the installed_apps folder. Do you have permission to make folders here: " + installed_app_drive)
     DB.create_tables([InstalledApp])
     frontend_installed_drive = os.path.join(installed_app_drive, "installed_apps", "frontend")
-    try:
-        os.makedirs(frontend_installed_drive)
-        os.makedirs(os.path.join(frontend_installed_drive, "src"))
-    except Exception as e:
-        click.echo("Hey, I couldn't create the frontend folder for a default app. Do you have permission to make folders here: " + frontend_installed_drive)
-    
+    if os.path.isdir(frontend_installed_drive) == False:
+        try:
+            os.makedirs(frontend_installed_drive)
+            os.makedirs(os.path.join(frontend_installed_drive, "src"))
+        except Exception as e:
+            click.echo("Hey, I couldn't create the frontend folder for a default app. Do you have permission to make folders here: " + frontend_installed_drive)
+        
     default_trafik_config = create_default_setup(os.path.join(frontend_installed_drive, "src"), domain)
-    fp = click.open_file(os.path.join(installed_app_drive, 'docker-compose.yml'), 'w')
+    fp = click.open_file(os.path.join(installed_app_drive, 'docker-compose.yml'), 'w+')
     fp.write(default_trafik_config)
     fp.close()
 
-    fp = click.open_file(os.path.join(app_directory, "config.json"), 'w')
+    fp = click.open_file(os.path.join(app_directory, "config.json"), 'w+')
     fp.write(json.dumps({
         'installed_app_directory': os.path.join(installed_app_drive, 'installed_apps'),
         'site_path': installed_app_drive,
