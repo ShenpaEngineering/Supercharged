@@ -13,7 +13,7 @@ def create_app_db():
 
 def create_default_setup(path, domain, installed_apps=[], ports=None):
     env = Environment(
-        loader=PackageLoader("supercharged.lib"),
+        loader=PackageLoader("supercharged"),
         autoescape=select_autoescape()
     )
 
@@ -28,7 +28,7 @@ def create_default_setup(path, domain, installed_apps=[], ports=None):
 
 def create_frontpage():
     env = Environment(
-        loader=PackageLoader("supercharged.lib"),
+        loader=PackageLoader("supercharged"),
         autoescape=select_autoescape()
     )
 

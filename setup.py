@@ -8,7 +8,7 @@ with open("./requirements.txt", "r", encoding="utf-8") as fh:
 
 setup(
     name = 'supercharged_cli',
-    version = '0.0.3',
+    version = '0.0.6',
     author = 'Shariq Torres',
     author_email = 'shariq.torres@gmail.com',
     license = 'GNU General',
