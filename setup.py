@@ -8,7 +8,7 @@ with open("./requirements.txt", "r", encoding="utf-8") as fh:
 
 setup(
     name = 'supercharged_cli',
-    version = '0.0.6',
+    version = '0.0.9',
     author = 'Shariq Torres',
     author_email = 'shariq.torres@gmail.com',
     license = 'GNU General',
@@ -17,6 +17,9 @@ setup(
     long_description_content_type = "text/markdown",
     url = 'https://github.com/ShenpaEngineering/Supercharged',
     packages = find_packages(),
+    package_data = {
+        'supercharged': ['templates/*']
+    },
     install_requires = [requirements],
     python_requires = '>3.7',
     entry_points = '''
