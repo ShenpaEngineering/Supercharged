@@ -9,7 +9,6 @@ import uuid
 import docker
 import shutil
 
-
 APP_NAME = 'supercharged'
 DB  = create_app_db()
 class BaseModel(Model):
@@ -28,7 +27,7 @@ class InstalledApp(BaseModel):
 def main():
     pass
 
-@click.command()
+@main.command()
 @click.option('--site_path', default=None, help='This is the path where all of the installed apps and config files will go to')
 @click.argument('domain')
 def init(site_path, domain):
@@ -87,7 +86,7 @@ def init(site_path, domain):
     fp.close()
 
 
-@click.command()
+@main.command()
 @click.argument('url')
 def download_package(url):
     """Downloads a package manifest from a repository
@@ -134,7 +133,7 @@ def download_package(url):
 
 
 
-@click.command()
+@main.command()
 @click.argument('package')
 def install_package(package):
     """Activates a previously downloaded package. 
@@ -172,7 +171,7 @@ def install_package(package):
     fp.close()
     DB.close()
 
-@click.command()
+@main.command()
 @click.argument('package')
 def uninstall_package(package):
     """Deactivates a previously installed packaged
@@ -198,7 +197,7 @@ def uninstall_package(package):
     fp.write(default_trafik_config)
     fp.close()
 
-@click.command()
+@main.command()
 @click.argument('package')
 def delete_package(package):
     """Deletes a downloaded package
@@ -216,7 +215,7 @@ def delete_package(package):
     DB.close()
 
 
-@click.command()
+@main.command()
 def list_packages():
     """Lists all downloaded packages
     """
@@ -232,7 +231,7 @@ def list_packages():
         click.echo(app.name + " is " + app.installed)
 
 
-@click.command()
+@main.command()
 @click.pass_context
 def uninstall(ctx):
     """Uninstalls the supercharged configuration,
@@ -255,11 +254,69 @@ def uninstall(ctx):
     shutil.rmtree(app_directory)
     click.echo("Uninstalled!")
 
+@click.group(invoke_without_command=True)
+@click.pass_context
+def config():
+    if ctx.invoked_subcommand is None:
+        click.echo('I was invoked without subcommand')
+    else:
+        click.echo('I am about to invoke %s' % ctx.invoked_subcommand)
 
-main.add_command(uninstall)
-main.add_command(delete_package)
-main.add_command(list_packages)
-main.add_command(uninstall_package)
-main.add_command(download_package)
-main.add_command(install_package)
-main.add_command(init)
+@config.command()
+@click.argument('param')
+@click.option('--value', default=None)
+def set(param, value):
+    """Sets configuration values"""
+    app_directory = click.get_app_dir(APP_NAME)
+    fp = click.open_file(os.path.join(app_directory, "config.json"), 'r')
+    config_data = json.loads(fp.read())
+    print(config_data)
+    if param == 'mode':
+        config_data['mode'] = value
+    elif param == 'username':
+        config_data['username'] = value
+    elif param == 'password':
+        newpass = click.prompt('What\'s the new password?', hide_input=True, confirmation_prompt=True)
+        config_data['password'] = newpass
+    else:
+        click.echo("Error! We only set values for the username, password, and mode")
+        return False
+    fp = open(os.path.join(app_directory, "config.json"),'w+')
+    fp.write(json.dumps(config_data))
+    fp.close()
+
+
+@config.command()
+@click.argument('credentials')
+@click.option("--pass_login", default=False)
+def check_login(credentials, pass_login):
+    """Checks the login credentials"""
+    username = credentials.split(":")[0]
+    password = credentials.split(":")[1]
+
+    app_directory = click.get_app_dir(APP_NAME)
+    fp = click.open_file(os.path.join(app_directory, "config.json"), 'r')
+    config_data = json.loads(fp.read())
+
+    if 'mode' in config_data.keys():
+        current_mode = config_data['mode']
+    else:
+        current_mode = 'production'
+    
+    if current_mode == 'production' and pass_login == True:
+        click.echo('ERROR')
+        return -1
+    elif current_mode == 'development' and pass_login == True:
+        click.echo('OK')
+        return
+    else:
+        if username == config_data['username'] and password == config_data['password']:
+            click.echo('OK')
+            return
+        else:
+            click.echo('FAIL')
+            return -1
+
+
+
+cli = click.CommandCollection(sources=[main, config])

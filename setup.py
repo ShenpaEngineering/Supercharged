@@ -8,7 +8,7 @@ with open("./requirements.txt", "r", encoding="utf-8") as fh:
 
 setup(
     name = 'supercharged_cli',
-    version = '0.0.9',
+    version = '0.0.10',
     author = 'Shariq Torres',
     author_email = 'shariq.torres@gmail.com',
     license = 'GNU General',
@@ -24,6 +24,6 @@ setup(
     python_requires = '>3.7',
     entry_points = '''
         [console_scripts]
-        supercharged=supercharged.lib.__main__:main
+        supercharged=supercharged.lib.__main__:cli
     '''
 )
